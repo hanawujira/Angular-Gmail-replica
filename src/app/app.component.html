@@ -1,0 +1,132 @@
+<div class="all-content">
+  <div class="header">
+    <div class="header-title">
+      <div class="header-icon">
+        <mat-icon>menu</mat-icon>
+      </div>
+      <div></div>
+      <div></div>
+    </div>
+    <div class="filter-input">
+      <form>
+        <div class="form-holder">
+          <table cellspacing="0" cellpadding="0" class="gstl_50 gstt" role="presentation" style="height: 28px;">
+            <tbody>
+              <tr>
+                <td>
+                  <table cellspacing="0" cellpadding="0" style="width: 100%;">
+                    <tbody>
+                      <tr>
+                        <td class="inner-table-row">
+                          <div style="position: relative;">
+                            <input aria-label="Search mail" placeholder="Search mail" 
+                              style="border: none; padding: 0px; margin: 0px; height: auto; width: 100%; background: url(&quot;data:image/gif;base64,R0lGODlhAQABAID/AMDAwAAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw%3D%3D&quot;) transparent; position: absolute; z-index: 6; left: 0px;">
+                              <input
+                              style="border: none; padding: 0px; margin: 0px; height: auto; width: 100%; position: absolute; z-index: 1; background-color: transparent; -webkit-text-fill-color: silver; color: silver; left: 0px; visibility: hidden;">
+                          </div>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </form>
+    </div>
+    <div class="account-manage"></div>
+  </div>
+  <div class="filter">
+  </div>
+  <div class="content">
+    <div class="left-content">
+      <div class="add-mail">
+        <div class="add-btn">
+          Compose
+        </div>
+      </div>
+      <div class="side-bar">
+        <div class="menu">
+          <div *ngFor="let menu of menus">
+            <div class="menu-item">
+              <div class="menu-icon">
+                <mat-icon>{{menu.icon}}x</mat-icon>
+              </div>
+              <div class="menu-text">
+                {{menu.text}}
+              </div>
+              <div class="menu-count" *ngIf="menu.count">
+                {{menu.count}}
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="hangout"></div>
+      </div>
+    </div>
+    <div class="right-content">
+      <div class="action-header">
+        <div class="action-side">
+          <mat-checkbox [(ngModel)]="isSelectAll" (change)="selectAll()" class="col-1"></mat-checkbox>
+          <button (click)="refresh()" mat-icon-button>
+            <mat-icon>refresh</mat-icon>
+          </button>
+          <button mat-icon-button>
+            <mat-icon>more_vert</mat-icon>
+          </button>
+        </div>
+        <div class="pagination-side">
+          <div class="pagination-text">
+              {{firstItem}} - {{lastItem}} of {{allMails.length}}
+            <button [disabled]="page == 1" (click)="prev()" mat-icon-button aria-label="Example icon button with a vertical three dot icon">
+              <mat-icon>chevron_left</mat-icon>
+            </button>
+            <button [disabled]="maxPage <= page" (click)="next()" mat-icon-button aria-label="Example icon button with a vertical three dot icon">
+              <mat-icon>chevron_right</mat-icon>
+            </button>
+          </div>
+        </div>
+      </div>
+      <div class="content-table">
+        <table>
+          <tbody>
+            <tr *ngFor="let mail of mails; let i=index;">
+              <td class="col-1 check-box">
+                <mat-checkbox [(ngModel)]="mail.isSelected"></mat-checkbox>
+              </td>
+              <td class="col-1 star">
+                <button mat-icon-button (click)="mail.isStarred =!mail.isStarred">
+                  <mat-icon class="marked" *ngIf="mail.isStarred">star</mat-icon>
+                  <mat-icon *ngIf="!mail.isStarred">star_outline</mat-icon>
+                </button>
+              </td>
+              <td class="col-1 bookmark">
+                <button mat-icon-button (click)="mail.isImportant=! mail.isImportant">
+                  <mat-icon class="marked" *ngIf="mail.isImportant">bookmark</mat-icon>
+                  <mat-icon *ngIf="!mail.isImportant">bookmark_outline</mat-icon>
+                </button>
+              </td>
+              <td class="col-2">
+                {{mail.senderName | titlecase}}
+              </td>
+              <td class="col-3">
+                {{mail.mailTitle}} - {{mail.message}}
+              </td>
+              <td class="col-2 date-row">
+                {{mail.dateTime | date}}
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="side-content">
+  
+    </div>
+  </div>
+  <div class="footer">
+  
+  </div>
+</div>
+
