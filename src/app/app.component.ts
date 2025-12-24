@@ -11,6 +11,7 @@ import { MessageService } from './services/message.service';
 export class AppComponent implements OnInit {
   public mails: MailModel[] = [];
   public allMails: MailModel[] = [];
+  public filteredMails: MailModel[] = [];
   public menus: MenuModel[] = [];
   public isSelectAll = false;
   public page: number = 1;
@@ -18,6 +19,8 @@ export class AppComponent implements OnInit {
   public maxPage: number = 0;
   public firstItem: number = 1;
   public lastItem: number = 0;
+  public selectedMenu: string = 'Inbox';
+  public searchText: string = '';
 
   constructor(private messageService: MessageService){
 
@@ -94,8 +97,48 @@ export class AppComponent implements OnInit {
       let val = new Date(t.dateTime);
       return new Date(t.dateTime).getFullYear() >= 2022
     });
-      this.maxPage = Math.ceil(this.allMails.length/this.pageSize);
-      this.paginateMail();
+      this.applyFilters();
+    });
+  }
+
+  applyFilters() {
+    // First apply menu filter
+    let filtered = this.allMails;
+    
+    if (this.selectedMenu === 'Starred') {
+      filtered = this.allMails.filter(m => m.isStarred);
+    } else if (this.selectedMenu === 'Important') {
+      filtered = this.allMails.filter(m => m.isImportant);
+    } else if (this.selectedMenu === 'Inbox') {
+      filtered = this.allMails;
+    }
+    
+    // Then apply search filter
+    if (this.searchText && typeof this.searchText === 'string' && this.searchText.trim()) {
+      const search = this.searchText.toLowerCase();
+      filtered = filtered.filter(m => 
+        m.senderName?.toLowerCase().includes(search) ||
+        m.mailTitle?.toLowerCase().includes(search) ||
+        m.message?.toLowerCase().includes(search)
+      );
+    }
+    
+    this.filteredMails = filtered;
+    this.maxPage = Math.ceil(this.filteredMails.length / this.pageSize);
+    this.page = 1;
+    this.updateMenuCounts();
+    this.paginateMail();
+  }
+
+  updateMenuCounts() {
+    this.menus.forEach(menu => {
+      if (menu.text === 'Inbox') {
+        menu.count = this.allMails.length;
+      } else if (menu.text === 'Starred') {
+        menu.count = this.allMails.filter(m => m.isStarred).length;
+      } else if (menu.text === 'Important') {
+        menu.count = this.allMails.filter(m => m.isImportant).length;
+      }
     });
   }
 
@@ -110,9 +153,11 @@ export class AppComponent implements OnInit {
   }
 
   paginateMail() {
-    this.mails = this.allMails.slice(this.lastItem, this.page* this.pageSize - 1);
-    this.firstItem = this.page * this.mails.length - this.mails.length;
-    this.lastItem = this.mails.length;
+    const startIndex = (this.page - 1) * this.pageSize;
+    const endIndex = startIndex + this.pageSize;
+    this.mails = this.filteredMails.slice(startIndex, endIndex);
+    this.firstItem = this.filteredMails.length > 0 ? startIndex + 1 : 0;
+    this.lastItem = Math.min(endIndex, this.filteredMails.length);
   }
 
   selectAll(){
@@ -122,7 +167,47 @@ export class AppComponent implements OnInit {
   refresh(){
     this.mails = [];
     this.allMails = [];
+    this.filteredMails = [];
     this.page = 1;
     this.getAllMessage();
+  }
+
+  filterByMenu(menu: MenuModel) {
+    this.selectedMenu = menu.text || '';
+    this.applyFilters();
+  }
+
+  onSearch(searchText: string) {
+    this.searchText = searchText || '';
+    this.applyFilters();
+  }
+
+  onStarToggle() {
+    this.updateMenuCounts();
+  }
+
+  onImportantToggle() {
+    this.updateMenuCounts();
+  }
+
+  hasSelectedMails(): boolean {
+    return this.mails.some(m => m.isSelected);
+  }
+
+  deleteSelected() {
+    const selectedIds = this.mails
+      .filter(m => m.isSelected)
+      .map(m => m.mailId);
+    
+    if (selectedIds.length > 0) {
+      // Remove selected mails from allMails array
+      this.allMails = this.allMails.filter(m => !selectedIds.includes(m.mailId));
+      
+      // Reset select all checkbox
+      this.isSelectAll = false;
+      
+      // Reapply filters and pagination
+      this.applyFilters();
+    }
   }
 }
