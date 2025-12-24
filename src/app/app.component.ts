@@ -189,4 +189,25 @@ export class AppComponent implements OnInit {
   onImportantToggle() {
     this.updateMenuCounts();
   }
+
+  hasSelectedMails(): boolean {
+    return this.mails.some(m => m.isSelected);
+  }
+
+  deleteSelected() {
+    const selectedIds = this.mails
+      .filter(m => m.isSelected)
+      .map(m => m.mailId);
+    
+    if (selectedIds.length > 0) {
+      // Remove selected mails from allMails array
+      this.allMails = this.allMails.filter(m => !selectedIds.includes(m.mailId));
+      
+      // Reset select all checkbox
+      this.isSelectAll = false;
+      
+      // Reapply filters and pagination
+      this.applyFilters();
+    }
+  }
 }

@@ -70,7 +70,10 @@
       <div class="action-header">
         <div class="action-side">
           <mat-checkbox [(ngModel)]="isSelectAll" (change)="selectAll()" class="col-1"></mat-checkbox>
-          <button (click)="refresh()" mat-icon-button>
+          <button (click)="deleteSelected()" mat-icon-button [disabled]="!hasSelectedMails()" title="Delete">
+            <mat-icon>delete</mat-icon>
+          </button>
+          <button (click)="refresh()" mat-icon-button title="Refresh">
             <mat-icon>refresh</mat-icon>
           </button>
           <button mat-icon-button>
