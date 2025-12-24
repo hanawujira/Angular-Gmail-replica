@@ -20,9 +20,10 @@
                         <td class="inner-table-row">
                           <div style="position: relative;">
                             <input aria-label="Search mail" placeholder="Search mail" 
+                              [(ngModel)]="searchText"
+                              (ngModelChange)="onSearch($event)"
+                              name="searchText"
                               style="border: none; padding: 0px; margin: 0px; height: auto; width: 100%; background: url(&quot;data:image/gif;base64,R0lGODlhAQABAID/AMDAwAAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw%3D%3D&quot;) transparent; position: absolute; z-index: 6; left: 0px;">
-                              <input
-                              style="border: none; padding: 0px; margin: 0px; height: auto; width: 100%; position: absolute; z-index: 1; background-color: transparent; -webkit-text-fill-color: silver; color: silver; left: 0px; visibility: hidden;">
                           </div>
                         </td>
                       </tr>
@@ -49,9 +50,9 @@
       <div class="side-bar">
         <div class="menu">
           <div *ngFor="let menu of menus">
-            <div class="menu-item">
+            <div class="menu-item" (click)="filterByMenu(menu)" [class.selected]="selectedMenu === menu.text">
               <div class="menu-icon">
-                <mat-icon>{{menu.icon}}x</mat-icon>
+                <mat-icon>{{menu.icon}}</mat-icon>
               </div>
               <div class="menu-text">
                 {{menu.text}}
@@ -78,7 +79,7 @@
         </div>
         <div class="pagination-side">
           <div class="pagination-text">
-              {{firstItem}} - {{lastItem}} of {{allMails.length}}
+              {{firstItem}} - {{lastItem}} of {{filteredMails.length}}
             <button [disabled]="page == 1" (click)="prev()" mat-icon-button aria-label="Example icon button with a vertical three dot icon">
               <mat-icon>chevron_left</mat-icon>
             </button>
@@ -96,13 +97,13 @@
                 <mat-checkbox [(ngModel)]="mail.isSelected"></mat-checkbox>
               </td>
               <td class="col-1 star">
-                <button mat-icon-button (click)="mail.isStarred =!mail.isStarred">
+                <button mat-icon-button (click)="mail.isStarred =!mail.isStarred; onStarToggle()">
                   <mat-icon class="marked" *ngIf="mail.isStarred">star</mat-icon>
                   <mat-icon *ngIf="!mail.isStarred">star_outline</mat-icon>
                 </button>
               </td>
               <td class="col-1 bookmark">
-                <button mat-icon-button (click)="mail.isImportant=! mail.isImportant">
+                <button mat-icon-button (click)="mail.isImportant=! mail.isImportant; onImportantToggle()">
                   <mat-icon class="marked" *ngIf="mail.isImportant">bookmark</mat-icon>
                   <mat-icon *ngIf="!mail.isImportant">bookmark_outline</mat-icon>
                 </button>
